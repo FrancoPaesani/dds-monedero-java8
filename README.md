@@ -1,6 +1,6 @@
 ## Monedero
 
-###Solución - Listado de Code Smells:
+### Solución - Listado de Code Smells:
 
 **<ins>1. Duplicated Code?: [Cuenta. Línea 17,19]:</ins>** Se puede tener un solo constructor que reciba el monto inicial. Tener validación de null. El saldo inicial sera 0 en caso de recibir como parámetro null (el atributo está inicializado en 0).
 
