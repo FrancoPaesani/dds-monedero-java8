@@ -11,16 +11,12 @@ import java.util.List;
 
 public class Cuenta {
 
-  private double saldo = 0;
+  private double saldo = 0; //pq si ya está en el constructor?
   private List<Movimiento> movimientos = new ArrayList<>();
 
-  public Cuenta() {
-    saldo = 0;
-  }
+  public Cuenta() { saldo = 0; }
 
-  public Cuenta(double montoInicial) {
-    saldo = montoInicial;
-  }
+  public Cuenta(double montoInicial) { saldo = montoInicial; }
 
   public void setMovimientos(List<Movimiento> movimientos) {
     this.movimientos = movimientos;
