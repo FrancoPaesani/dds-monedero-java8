@@ -26,8 +26,9 @@ public class Cuenta {
     validarMontoNoNegativo(cuanto);
     validarCantidadDepositosDiarios(3);
 
-    this.agregarMovimiento(LocalDate.now(), cuanto, true);
-    this.saldo = saldo + cuanto;
+    Movimiento movimientoActual = new Movimiento(LocalDate.now(), cuanto, Deposito.getINSTANCE());
+    this.agregarMovimiento(movimientoActual);
+    this.saldo = movimientoActual.calcularValor(saldo, cuanto);
   }
 
   public void sacar(double cuanto) {
@@ -35,8 +36,9 @@ public class Cuenta {
     validarSaldoSuficiente(getSaldo(), cuanto);
     validarLimiteDiario(getMontoExtraidoA(LocalDate.now()), cuanto, 1000);
 
-    this.agregarMovimiento(LocalDate.now(), cuanto, false);
-    this.saldo = saldo - cuanto;
+    Movimiento movimientoActual = new Movimiento(LocalDate.now(), cuanto, Extraccion.getINSTANCE());
+    this.agregarMovimiento(movimientoActual);
+    this.saldo = movimientoActual.calcularValor(saldo, cuanto);
   }
   private void validarSaldoSuficiente(double saldo, double monto) {
     if (saldo - monto < 0) {
@@ -60,8 +62,7 @@ public class Cuenta {
       throw new MaximaCantidadDepositosException("Ya excedio los " + cantDepositosMaximos + " depositos diarios");
     }
   }
-  public void agregarMovimiento(LocalDate fecha, double cuanto, boolean esDeposito) {
-    Movimiento movimiento = new Movimiento(fecha, cuanto, esDeposito);
+  public void agregarMovimiento(Movimiento movimiento) {
     movimientos.add(movimiento);
   }
 
