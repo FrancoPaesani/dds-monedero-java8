@@ -24,9 +24,10 @@ No hace falta tener los dos métodos isDepósito() y isExtracción(). Se puede h
 
 Un Movimiento no tiene porque saber agregarse a una cuenta en particular. Es la cuenta quien tiene que agregar un Movimiento determinado basado en la fecha, monto y tipo de operación.
 
-**<ins>7. Feature Envy/Misplaced Method: [Movimiento. Línea 51: Método calcularValor(Cuenta)]:</ins>**
+**<ins>7. Feature Envy/Misplaced Method - Primitive Obsession (TipoOperación): [Movimiento. Línea 51: Método calcularValor(Cuenta) / Atributo esDeposito]:</ins>**
 
 Es la propia cuenta quien debería realizar el set saldo actual a partir de un nuevo movimiento. El movimiento en base a un monto podría devolver el importe luego de realizar este movimiento, pero la asignación del saldo actual a la cuenta la debería hacer la Cuenta.
+Se podría modelar una interfaz tipoOperación y delegar el cálculo del nuevo saldo a las clases que la implementen.
 
 
 ### Contexto
