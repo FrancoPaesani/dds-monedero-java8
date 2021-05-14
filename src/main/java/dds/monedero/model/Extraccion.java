@@ -1,5 +1,7 @@
 package dds.monedero.model;
 
+import java.math.BigDecimal;
+
 public class Extraccion implements TipoOperacion{
     private static final Extraccion INSTANCE = new Extraccion();
 
@@ -7,7 +9,7 @@ public class Extraccion implements TipoOperacion{
 
     public boolean isDeposito() { return false; }
 
-    public double calcularNuevoSaldo(double saldo, double monto) {
-        return saldo - monto;
+    public BigDecimal calcularNuevoSaldo(BigDecimal saldo, BigDecimal monto) {
+        return saldo.subtract(monto);
     }
 }

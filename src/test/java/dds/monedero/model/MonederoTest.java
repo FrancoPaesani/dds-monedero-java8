@@ -8,10 +8,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MonederoTest {
   private Cuenta cuentaJorge;
@@ -21,69 +21,71 @@ public class MonederoTest {
 
   @BeforeEach
   void init() {
-    cuentaJorge = new Cuenta(new Double(1000), 500,3);
-    cuentaManuel = new Cuenta(new Double(1000), 2000,2);
-    cuentaJosefa = new Cuenta(new Double(2000),1000,1);
-    cuentaDaniel = new Cuenta(new Double(5000), 2500,2);
+    cuentaJorge = new Cuenta(new BigDecimal(1000), new BigDecimal(500),3);
+    cuentaManuel = new Cuenta(new BigDecimal(1000), new BigDecimal(2000),2);
+    cuentaJosefa = new Cuenta(new BigDecimal(2000),new BigDecimal(1000),1);
+    cuentaDaniel = new Cuenta(new BigDecimal(5000), new BigDecimal(2500),2);
   }
 
   @Test
   void unDepositode100EnCuentaQueTiene1000Suma1100() {
-    assertEquals(Deposito.getINSTANCE().calcularNuevoSaldo(1000, 100), 1100);
+    assertTrue(Deposito.getINSTANCE().calcularNuevoSaldo(new BigDecimal(1000), new BigDecimal(100))
+            .compareTo(new BigDecimal(1100)) == 0);
   }
 
   @Test
   void unaExtraccionDe100EnCuentaQueTiene1000Es900() {
-    assertEquals(Extraccion.getINSTANCE().calcularNuevoSaldo(1000, 100), 900);
+    assertTrue(Extraccion.getINSTANCE().calcularNuevoSaldo(new BigDecimal(1000), new BigDecimal(100))
+            .compareTo(new BigDecimal(900)) == 0);
   }
 
   @Test
   void DepositoDe500EnCuentaDe2000Tiene2500() {
-    cuentaJosefa.poner(500);
-    assertEquals(cuentaJosefa.getSaldo(),2500,0);
+    cuentaJosefa.poner(new BigDecimal(500));
+    assertTrue(cuentaJosefa.getSaldo().compareTo(new BigDecimal(2500)) == 0);
   }
 
   @Test
   void MasDetresDepositosEnCuentaCon3DepositosMaximosNoSePuede() {
-    cuentaJorge.poner(100);
-    cuentaJorge.poner(200);
-    cuentaJorge.poner(200);
-    assertThrows(MaximaCantidadDepositosException.class,() -> cuentaJorge.poner(100));
+    cuentaJorge.poner(new BigDecimal(100));
+    cuentaJorge.poner(new BigDecimal(200));
+    cuentaJorge.poner(new BigDecimal(200));
+    assertThrows(MaximaCantidadDepositosException.class,() -> cuentaJorge.poner(new BigDecimal(100)));
   }
 
   @Test
   void PuedoTresDepositosEnCuentaCon3DepositosMaximos() {
-    cuentaJorge.poner(100);
-    cuentaJorge.poner(200);
+    cuentaJorge.poner(new BigDecimal(100));
+    cuentaJorge.poner(new BigDecimal(200));
     assertEquals(cuentaJorge.getMovimientos().size(),2);
   }
 
   @Test
   void DosExtraccionesDe500Y1DepositoDe1000CuentaTiene3Operaciones() {
-    cuentaJosefa.sacar(500);
-    cuentaJosefa.sacar(500);
-    cuentaJosefa.poner(1000);
+    cuentaJosefa.sacar(new BigDecimal(500));
+    cuentaJosefa.sacar(new BigDecimal(500));
+    cuentaJosefa.poner(new BigDecimal(1000));
     assertEquals(cuentaJosefa.getMovimientos().size(),3);
   }
 
   @Test
   void NingunaCuentaPuedeDepositarMontoNegativo() {
-    assertThrows(MontoNegativoException.class, () -> cuentaManuel.poner(-1));
+    assertThrows(MontoNegativoException.class, () -> cuentaManuel.poner(new BigDecimal(-1)));
   }
 
   @Test
   public void NingunaCuentaPuedeExtraerMontoNegativo() {
-    assertThrows(MontoNegativoException.class, () -> cuentaDaniel.sacar(-500));
+    assertThrows(MontoNegativoException.class, () -> cuentaDaniel.sacar(new BigDecimal(-500)));
   }
 
   @Test
   void CuentaQueTieneMonto1000NoSePuedeExtraerMasDe1000() {
-    assertThrows(SaldoMenorException.class, () -> cuentaManuel.sacar(1100));
+    System.out.println(cuentaManuel.getMontoExtraidoA(LocalDate.now()));
+    assertThrows(SaldoMenorException.class, () -> cuentaManuel.sacar(new BigDecimal(1100)));
   }
 
   @Test
   void ExtraccionDiariaNoPuedo5000EnCuentaConLimiteExtraccion2500() {
-    assertThrows(MaximoExtraccionDiarioException.class, () -> cuentaDaniel.sacar(5000));
+    assertThrows(MaximoExtraccionDiarioException.class, () -> cuentaDaniel.sacar(new BigDecimal(5000)));
   }
-
 }

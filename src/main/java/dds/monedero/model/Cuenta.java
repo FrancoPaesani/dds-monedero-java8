@@ -10,17 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.math.BigDecimal;
 
 public class Cuenta {
 
-  private double saldo = 0;
-  private double limiteDiarioExtraccion;
+  private BigDecimal saldo = BigDecimal.ZERO;
+  private BigDecimal limiteDiarioExtraccion;
   private int cantDepositosMaximos;
   private List<Movimiento> movimientos = new ArrayList<>();
 
-  public Cuenta(Double montoInicial, double limiteDiarioExtraccion, int cantDepositosMaximos) {
+  public Cuenta(BigDecimal montoInicial, BigDecimal limiteDiarioExtraccion, int cantDepositosMaximos) {
     if(montoInicial != null) {
-      this.saldo = (double) montoInicial;
+      this.saldo = montoInicial;
     }
     this.limiteDiarioExtraccion = Objects.requireNonNull(limiteDiarioExtraccion,"Se  requiere un limite diario de extraccion");
     this.cantDepositosMaximos = Objects.requireNonNull(cantDepositosMaximos,"Se  requiere un limite diario de depositos.");
@@ -30,7 +31,7 @@ public class Cuenta {
     this.movimientos = movimientos;
   }
 
-  public void poner(double monto) {
+  public void poner(BigDecimal monto) {
     validarMontoNoNegativo(monto);
     validarCantidadDepositosDiarios();
 
@@ -39,7 +40,7 @@ public class Cuenta {
     this.saldo = movimientoActual.calcularValor(saldo, monto);
   }
 
-  public void sacar(double monto) {
+  public void sacar(BigDecimal monto) {
     validarMontoNoNegativo(monto);
     validarLimiteDiario(getMontoExtraidoA(LocalDate.now()), monto);
     validarSaldoSuficiente(getSaldo(), monto);
@@ -48,19 +49,20 @@ public class Cuenta {
     this.agregarMovimiento(movimientoActual);
     this.saldo = movimientoActual.calcularValor(saldo, monto);
   }
-  private void validarSaldoSuficiente(double saldo, double monto) {
-    if (saldo - monto < 0) {
+  private void validarSaldoSuficiente(BigDecimal saldo, BigDecimal monto) {
+    if (saldo.subtract(monto).compareTo(BigDecimal.ZERO) == -1) {
       throw new SaldoMenorException("No puede sacar mas de " + getSaldo() + " $");
     }
   }
-  private void validarLimiteDiario(double montoExtraidoHoy, double montoExtraccion) {
-    if (montoExtraccion > limiteDiarioExtraccion - montoExtraidoHoy) {
+  private void validarLimiteDiario(BigDecimal montoExtraidoAHoy, BigDecimal montoExtraccion) {
+    BigDecimal puedoSacarHoy = limiteDiarioExtraccion.subtract(montoExtraidoAHoy);
+    if (montoExtraccion.compareTo(puedoSacarHoy) == 1) {
       throw new MaximoExtraccionDiarioException("No puede extraer mas de $ " + limiteDiarioExtraccion
-              + " diarios, extracción restante en el día de hoy: " + (limiteDiarioExtraccion - montoExtraidoHoy));
+              + " diarios, extracción restante en el día de hoy: " + (puedoSacarHoy));
     }
   }
-  private void validarMontoNoNegativo(double monto) {
-    if (monto <= 0) {
+  private void validarMontoNoNegativo(BigDecimal monto) {
+    if (monto.compareTo(BigDecimal.ZERO) <= 0) {
       throw new MontoNegativoException(monto + ": el monto a ingresar debe ser un valor positivo");
     }
   }
@@ -74,11 +76,11 @@ public class Cuenta {
     movimientos.add(movimiento);
   }
 
-  public double getMontoExtraidoA(LocalDate fecha) {
+  public BigDecimal getMontoExtraidoA(LocalDate fecha) {
     return getMovimientos().stream()
-        .filter(movimiento -> movimiento.fueExtraido(fecha))
-        .mapToDouble(Movimiento::getMonto)
-        .sum();
+            .filter(movimiento -> movimiento.fueExtraido(fecha))
+            .map(Movimiento::getMonto)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
   public int cantDepositosEnElDia(LocalDate fecha) {
@@ -90,12 +92,8 @@ public class Cuenta {
     return movimientos;
   }
 
-  public double getSaldo() {
+  public BigDecimal getSaldo() {
     return saldo;
-  }
-
-  public void setSaldo(double saldo) {
-    this.saldo = saldo;
   }
 
 }

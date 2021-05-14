@@ -1,6 +1,8 @@
 package dds.monedero.model;
 
+import java.math.BigDecimal;
+
 public interface TipoOperacion {
-    public double calcularNuevoSaldo(double saldo, double monto);
+    public BigDecimal calcularNuevoSaldo(BigDecimal saldo, BigDecimal monto);
     public boolean isDeposito();
 }
