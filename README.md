@@ -2,29 +2,29 @@
 
 ### Solución - Listado de Code Smells:
 
-**<ins>1. Duplicated Code: [Cuenta. Línea 28 y 40]:</ins>** La validación de si el parámetro es negativo se puede extraer a un metodo -> validarMontoPositivo() y usarlo en el método poner(x) y sacar(x).
+**<ins>1. Duplicated Code: [Cuenta. Validación monto positivo]:</ins>** La validación de si el parámetro es negativo se puede extraer a un metodo -> validarMontoPositivo() y usarlo en el método poner(x) y sacar(x).
 
-**<ins>2. Duplicación de Código/ duplicación de objetos: [Cuenta. Línea 36 y 52: Método poner(),sacar()]:</ins>**
+**<ins>2. Duplicación de Código/ duplicación de objetos: [Cuenta. Método poner(),sacar()]:</ins>**
 Por cada new Movimiento(...).agregateA(...) estoy creando dos objetos Movimiento con la misma info, por un tema de mala ubicación de métodos (ver code smell N° 7).
 
-**<ins>3. Long Method: [Cuenta. Línea 39: Método sacar()]:</ins>**
+**<ins>3. Long Method: [Cuenta. Método sacar()]:</ins>**
 
 En el método sacar() ( vale también para el método poner() ) se están realizando demasiadas validaciones, las cuales pueden variar. Como por ejemplo, puede variar que la cantidad de depósitos por día sea de 3; o que el límite de extracción sea de 1000.
 Sería mejor parametrizar estos valores y extraerlos a otro métodos o a otras clases las cuales realicen las validaciones.
 
-**<ins>4. Feature Envy: [Cuenta. Línea 60. Método getMontoExtraidoA(fecha)]:</ins>**
+**<ins>4. Feature Envy: [Cuenta. Método getMontoExtraidoA(fecha)]:</ins>**
 
 En este método estamos realizando muchos mensajes sobre un Movimiento mientras la interfaz nos provee 2 métodos para realizar lo mismo con mayor encapsulamiento "fueExtraido(fecha)".
 
-**<ins>5. Duplicated Code: [Movimiento. Línea 38. Método isDeposito()]:</ins>**
+**<ins>5. Duplicated Code: [Movimiento. Método isDeposito()]:</ins>**
 
 No hace falta tener los dos métodos isDepósito() y isExtracción(). Se puede hacer un return !isDeposito() (igualmente no es demasiada repetición, puede ayudar tener los 2 para más declaratividad).
 
-**<ins>6. Misplaced Method: [Movimiento. Línea 46: Método agregateA(Cuenta)]:</ins>**
+**<ins>6. Misplaced Method: [Movimiento. Método agregateA(Cuenta)]:</ins>**
 
 Un Movimiento no tiene porque saber agregarse a una cuenta en particular. Es la cuenta quien tiene que agregar un Movimiento determinado basado en la fecha, monto y tipo de operación.
 
-**<ins>7. Feature Envy/Misplaced Method - Primitive Obsession (TipoOperación): [Movimiento. Línea 51: Método calcularValor(Cuenta) / Atributo esDeposito]:</ins>**
+**<ins>7. Feature Envy/Misplaced Method - Primitive Obsession (TipoOperación): [Movimiento. Método calcularValor(Cuenta) / Atributo esDeposito]:</ins>**
 
 Es la propia cuenta quien debería realizar el set saldo actual a partir de un nuevo movimiento. El movimiento en base a un monto podría devolver el importe luego de realizar este movimiento, pero la asignación del saldo actual a la cuenta la debería hacer la Cuenta.
 Se podría modelar una interfaz tipoOperación y delegar el cálculo del nuevo saldo a las clases que la implementen.
